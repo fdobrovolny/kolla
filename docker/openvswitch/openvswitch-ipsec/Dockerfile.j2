@@ -1,0 +1,30 @@
+FROM {{ namespace }}/{{ image_prefix }}openvswitch-base:{{ tag }}
+{% block labels %}
+LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
+{% endblock %}
+
+{% block openvswitch_ipsec_header %}{% endblock %}
+
+{% import "macros.j2" as macros with context %}
+
+{{ macros.enable_extra_repos(['openvswitch']) }}
+
+{% block ovs_ipsec_install %}
+
+{% if base_package_type == 'rpm' %}
+    {% set openvswitch_ipsec_packages = [
+        'libreswan',
+        'openvswitch3.3-ipsec',
+    ] %}
+{% elif base_package_type == 'deb' %}
+    {% set openvswitch_ipsec_packages = [
+        'openvswitch-ipsec'
+    ] %}
+
+{% endif %}
+{{ macros.install_packages(openvswitch_ipsec_packages | customizable("packages")) }}
+
+{% endblock %}
+
+{% block openvswitch_ipsec_footer %}{% endblock %}
+{% block footer %}{% endblock %}
