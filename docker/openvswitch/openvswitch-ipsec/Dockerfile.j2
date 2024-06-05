@@ -1,6 +1,6 @@
 FROM {{ namespace }}/{{ image_prefix }}openvswitch-base:{{ tag }}
 {% block labels %}
-LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
+    LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
 {% endblock %}
 
 {% block openvswitch_ipsec_header %}{% endblock %}
@@ -24,6 +24,15 @@ LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build
 {% endif %}
 {{ macros.install_packages(openvswitch_ipsec_packages | customizable("packages")) }}
 
+{% endblock %}
+
+{% block install_supervisor %}
+{% set openvswitch_ipsec_pip_packages = [
+    'supervisor',
+] %}
+
+# TODO consider using upper_constraints
+RUN {{ macros.install_pip(openvswitch_ipsec_pip_packages | customizable("pip_packages"), false) }}
 {% endblock %}
 
 {% block openvswitch_ipsec_footer %}{% endblock %}
