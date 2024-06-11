@@ -18,7 +18,8 @@ FROM {{ namespace }}/{{ image_prefix }}openvswitch-base:{{ tag }}
     ] %}
 {% elif base_package_type == 'deb' %}
     {% set openvswitch_ipsec_packages = [
-        'openvswitch-ipsec'
+        'openvswitch-ipsec',
+        'supervisor',
     ] %}
 
 {% endif %}
@@ -30,9 +31,10 @@ FROM {{ namespace }}/{{ image_prefix }}openvswitch-base:{{ tag }}
 {% set openvswitch_ipsec_pip_packages = [
     'supervisor',
 ] %}
-
-# TODO consider using upper_constraints
-RUN {{ macros.install_pip(openvswitch_ipsec_pip_packages | customizable("pip_packages"), false) }}
+{% if base_package_type == 'rpm' %}
+    # TODO consider using upper_constraints
+    RUN {{ macros.install_pip(openvswitch_ipsec_pip_packages | customizable("pip_packages"), false) }}
+{% endif %}
 {% endblock %}
 
 {% block openvswitch_ipsec_footer %}{% endblock %}
